@@ -33,49 +33,58 @@ app.post('/submit', (req, res) => {
     const { name, age, batch } = req.body;
 
     // Check if a participant with the same name already exists
-    db.get(
-        'SELECT id, age, batch, registrationDate FROM Participant WHERE name = ?',
-        [name],
-        (err, existingParticipant) => {
-            if (err) {
-                return res.send('Error checking registration status.');
-            }
+    db.get('SELECT id, age, batch, registrationDate FROM Participant WHERE name = ?', [name], (err, existingParticipant) => {
+        if (err) {
+            return res.send('Error checking registration status.');
+        }
 
-            if (existingParticipant) {
-                // Check if the age and batch are the same
-                if (existingParticipant.age === parseInt(age) && existingParticipant.batch === batch) {
-                    // Check if one month has elapsed since registration
-                    const today = new Date();
-                    const registrationDate = new Date(existingParticipant.registrationDate);
-                    const oneMonthAgo = new Date(today);
-                    oneMonthAgo.setMonth(today.getMonth() - 1);
+        if (existingParticipant) {
+            // Participant with the same name already exists
 
-                    if (registrationDate > oneMonthAgo) {
-                        // Participant cannot change batch within one month
-                        return res.send('Error: Already registered');
-                    }
-                } else {
-                    // Name is same but age or batch is different
-                    return res.send('Error: You cannot change the batch wait for 1 month');
-                }
-            }
+            // Check if the age, batch, and one-month condition are met
+            const sameAge = existingParticipant.age === parseInt(age);
+            const sameBatch = existingParticipant.batch === batch;
+            const withinOneMonth = isWithinOneMonth(existingParticipant.registrationDate);
 
-            // No participant with the same name or waiting period elapsed, proceed with registration
-            db.run(
-                'INSERT INTO Participant (name, age, batch) VALUES (?, ?, ?)',
-                [name, age, batch],
-                (err) => {
+            if (sameAge && sameBatch) {
+                // Participant with the same name, age, and batch already registered
+                return res.send('Error: Already registered');
+            } else if (sameAge && !sameBatch && withinOneMonth) {
+                // Same age but different batch, cannot change batch within one month
+                return res.send('Error: You cannot change the batch, wait for 1 month');
+            } else {
+                // More than one month has elapsed or different age, proceed with registration
+                db.run('INSERT INTO Participant (name, age, batch) VALUES (?, ?, ?)', [name, age, batch], (err) => {
                     if (err) {
                         return res.send('Error submitting the form.');
                     }
-
-                    // Redirect to the payment page on successful form submission
                     res.redirect('/payment');
+                });
+            }
+        } else {
+            // No participant with the same name, proceed with registration
+            db.run('INSERT INTO Participant (name, age, batch) VALUES (?, ?, ?)', [name, age, batch], (err) => {
+                if (err) {
+                    return res.send('Error submitting the form.');
                 }
-            );
+                res.redirect('/payment');
+            });
         }
-    );
+    });
 });
+
+// Function to check if one month has elapsed
+function isWithinOneMonth(registrationDate) {
+    const today = new Date();
+    const registrationDateObj = new Date(registrationDate);
+    const oneMonthAgo = new Date(today);
+    oneMonthAgo.setMonth(today.getMonth() - 1);
+
+    return registrationDateObj > oneMonthAgo;
+}
+
+
+
 
 // Serve the payment page
 app.get('/payment', (req, res) => {
