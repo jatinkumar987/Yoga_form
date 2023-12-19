@@ -1,0 +1,97 @@
+<!-- payment.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h3 {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .payment-option {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .payment-option:hover {
+            background-color: #eee;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .image-container {
+            margin-top: 20px;
+        }
+
+        .pay-button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .pay-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payment Page</h1>
+    <h3>Please proceed with the payment of 500 Rs. It's mandatory to get access to the Yoga Classes.</h3>
+
+    <div class="payment-options">
+        <!-- Paytm Payment Option -->
+        <div class="payment-option">
+            <!-- Add Paytm payment button or QR code if needed -->
+            <button class="pay-button" onclick="payWithPaytm()">Complete Payment</button>
+        </div>
+    </div>
+
+    <!-- Add payment form or payment instructions here -->
+
+   
+
+    <script>
+        function payWithPaytm() {
+            // Implement Paytm payment logic here
+            alert('Redirecting for payment...');
+            // You can add the actual Paytm payment integration code or redirect logic
+        }
+    </script>
+</body>
+</html>
